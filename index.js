@@ -5,13 +5,12 @@ const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
 const { execSync } = require('child_process');
-const prettier = require('prettier');
 
 const program = new Command();
 
 program
   .version('1.0.0')
-  .description('Create a new Next.js project with custom configuration');
+  .description('CLI to create a Next.js project with custom configurations');
 
 program
   .command('create')
@@ -19,32 +18,42 @@ program
   .action(async () => {
     const answers = await inquirer.prompt([
       {
-        type: 'input',
-        name: 'projectName',
-        message: 'Enter the project name:',
-      },
-      {
         type: 'list',
         name: 'authMethod',
-        message: 'Select the authentication method:',
-        choices: ['Auth0', 'Firebase', 'NextAuth'],
+        message: 'Which authentication method would you like to use?',
+        choices: ['None', 'JWT', 'OAuth'],
       },
     ]);
 
-    const { projectName, authMethod } = answers;
+    const { authMethod } = answers;
+    const projectName = 'my-next-app';
 
-    // Create a new Next.js project
-    console.log(`Creating a new Next.js project: ${projectName}`);
+    // Create the Next.js project
+    console.log(`Creating a new Next.js project named ${projectName}...`);
     execSync(`npx create-next-app@latest ${projectName}`, { stdio: 'inherit' });
 
-    // Copy the selected authentication setup to the new project
-    const sourcePath = path.join(__dirname, 'templates', authMethod.toLowerCase());
-    const destinationPath = path.join(process.cwd(), projectName);
+    let templatePath;
+    switch (authMethod) {
+      case 'auth0':
+        templatePath = path.join(__dirname, 'templates', 'auth0');
+        break;
+      case 'firebase':
+        templatePath = path.join(__dirname, 'templates', 'firebase');
+        break;
+      case 'nextauth':
+        templatePath = path.join(__dirname, 'templates', 'nextauth');
+        break;
+      default:
+        console.error('Invalid choice');
+        process.exit(1);
+    }
 
-    console.log(`Copying ${authMethod} authentication setup to ${projectName}`);
-    await fs.copy(sourcePath, destinationPath);
+    const targetPath = path.join(process.cwd(), projectName);
 
-    console.log(`${authMethod} authentication setup added to ${projectName}!`);
+    // Copy the chosen template files to the project directory
+    fs.copy(templatePath, targetPath)
+      .then(() => console.log(`Project created at ${targetPath}`))
+      .catch(err => console.error(err));
   });
 
 program.parse(process.argv);
