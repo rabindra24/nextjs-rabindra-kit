@@ -21,7 +21,7 @@ program
         type: 'list',
         name: 'authMethod',
         message: 'Which authentication method would you like to use?',
-        choices: ['None', 'JWT', 'OAuth'],
+        choices: ['nextauth', 'auth0', 'firebase'],
       },
     ]);
 

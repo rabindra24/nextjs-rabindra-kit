@@ -1,6 +1,6 @@
 {
   "name": "rabindra-kit",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Develop for Developer By Developer",
   "main": "index.js",
   "bin": {
@@ -29,7 +29,7 @@
   "dependencies": {
     "commander": "^12.1.0",
     "fs-extra": "^11.2.0",
-    "inquirer": "^12.2.0",
+    "inquirer": "^8.2.6",
     "prettier": "^3.4.2"
   }
 }
